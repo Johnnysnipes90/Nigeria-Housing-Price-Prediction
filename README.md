@@ -56,8 +56,8 @@ Follow these steps to set up the project locally.
 
 1. **Clone the repository**:
    ```bash```
-   git clone https://github.com/your-username/nigeria-housing-price-prediction.git
-   cd nigeria-housing-price-prediction
+   git clone https://github.com/Johnnysnipes90/Nigeria-Housing-Price-Prediction.git
+   cd Nigeria-Housing-Price-Prediction
 2. **Create a virtual environment**
    python3 -m venv venv
   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
