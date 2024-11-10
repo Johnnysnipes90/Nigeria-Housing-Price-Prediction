@@ -2,15 +2,14 @@ import os
 import json
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, StandardScaler
-from sklearn.model_selection import train_test_split
 
 class Preprocessor:
     DATA_PATH = os.getenv("DATA_PATH_NIGERIA", default="dataset/nigeria_houses_data.csv")
     PROPERTY_TYPE_CONFIG = os.getenv("PROPERTY_TYPE_CONFIG", default="config/property_type.json")
-    STATE_CONFIG = os.getenv("STATE_CONFIG", default="config/state.json")
+    STATE_CONFIG = os.getenv("STATE_CONFIG", default="config/state_encoding.json")
     COLUMN_CONFIG = os.getenv("COLUMN_CONFIG", default="config/columns.json")
     TRAINING_COLUMNS_CONFIG = os.getenv("TRAINING_COLUMNS_CONFIG", default="config/training_columns.json")
+    TOWN_CONFIG = os.getenv("TOWN_CONFIG", default="config/town.json")
 
     def __init__(self):
         # Load dataset
@@ -19,7 +18,8 @@ class Preprocessor:
         self.training_columns = self.load_training_columns()
         self.property_type_mapping = self.load_property_type()
         self.state_mapping = self.load_state()
-    
+        self.town_mapping = self.load_town()
+
     @classmethod
     def load_columns(cls):
         with open(cls.COLUMN_CONFIG, "r") as f:
@@ -29,7 +29,7 @@ class Preprocessor:
     def load_training_columns(cls):
         with open(cls.TRAINING_COLUMNS_CONFIG, "r") as f:
             return json.load(f)
-    
+
     @classmethod
     def load_property_type(cls):
         with open(cls.PROPERTY_TYPE_CONFIG, "r") as f:
@@ -39,12 +39,14 @@ class Preprocessor:
     def load_state(cls):
         with open(cls.STATE_CONFIG, "r") as f:
             return json.load(f)
+        
+    @classmethod
+    def load_town(cls):
+        with open(cls.TOWN_CONFIG, "r") as f:
+            return json.load(f)
 
     @staticmethod
     def column_encoder(df: pd.DataFrame, config: dict, column_name: str) -> pd.DataFrame:
-        """
-        Maps values in `column_name` based on `config` dictionary, encoding as per provided keys.
-        """
         if column_name not in df.columns:
             raise ValueError(f"The column '{column_name}' does not exist in the DataFrame.")
         
@@ -54,12 +56,9 @@ class Preprocessor:
         df[column_name] = df[column_name].map(config).astype(int)
         
         return df
-    
+
     @staticmethod
     def reorder_and_cast_columns(df: pd.DataFrame, reference_dict: dict) -> pd.DataFrame:
-        """
-        Reorder the columns of df to match reference_dict and cast to specified types.
-        """
         column_order = list(reference_dict.keys())
         reordered_df = df.reindex(columns=column_order)
 
@@ -69,16 +68,13 @@ class Preprocessor:
 
         return reordered_df
 
-    def preprocess(self, input_df: pd.DataFrame=None) -> pd.DataFrame:
-        """
-        Preprocess the data specific to Nigeria housing price prediction project.
-        """
+    def preprocess(self, input_df: pd.DataFrame = None) -> pd.DataFrame:
         df = input_df.copy() if input_df is not None else self.data.copy()
 
         # Drop duplicates
         df.drop_duplicates(inplace=True)
 
-        # Convert columns from float to int
+        # Convert columns from float to int where necessary
         columns_to_convert = ['bedrooms', 'bathrooms', 'toilets', 'parking_space']
         df[columns_to_convert] = df[columns_to_convert].astype('int64')
 
@@ -95,11 +91,11 @@ class Preprocessor:
         # Price per bedroom feature
         df['price_per_bedroom'] = df['price'] / df['bedrooms']
 
-        # One-Hot Encoding for 'town' column
+        # One-Hot Encoding for 'town' using loaded config
         df = pd.get_dummies(df, columns=['town'], drop_first=True)
 
         # Dropping unnecessary columns
-        columns_to_drop = ["property_type", "state_encoded"]
+        columns_to_drop = ["title", "state", "town"]
         df.drop(columns=columns_to_drop, inplace=True, errors='ignore')
 
         # Reorder and cast columns
