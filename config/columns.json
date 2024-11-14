@@ -1,0 +1,10 @@
+{
+    "bedrooms": "float64",
+    "bathrooms": "float64",
+    "toilets": "float64",
+    "parking_space": "float64",
+    "title": "object",
+    "town": "object",
+    "state": "object",
+    "price": "float64"
+}

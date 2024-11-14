@@ -1,0 +1,3 @@
+{
+    "columns_to_convert": ["bedrooms", "bathrooms", "toilets", "parking_space"]
+}

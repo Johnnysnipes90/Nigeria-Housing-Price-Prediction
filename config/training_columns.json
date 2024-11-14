@@ -1,0 +1,19 @@
+{
+    "bedrooms": "int64",
+    "bathrooms": "int64",
+    "toilets": "float64",
+    "parking_space": "float64",
+    "toilet": "int64",
+    "price_per_bedroom": "float64",
+    "total_rooms": "float64",
+    "room_to_parking": "float64",
+    "title_Block of Flats": "uint8",
+    "title_Detached Bungalow": "uint8",
+    "title_Detached Duplex": "uint8",
+    "title_Semi Detached Bungalow": "uint8",
+    "title_Semi Detached Duplex": "uint8",
+    "title_Terraced Bungalow": "uint8",
+    "title_Terraced Duplexes": "uint8",
+    "state_target_enc": "float64",
+    "town_freq_enc": "float64"
+}
